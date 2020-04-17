@@ -48,7 +48,8 @@ public class Signup extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     TextView DisplayMsg;
     EditText username,password;
-    Button create,back,clickImage;
+    Button create,back;
+    ImageView clickImage;
     String IMEI;
     LocationManager locationManager;
     Context c=this;
@@ -204,6 +205,12 @@ public class Signup extends AppCompatActivity {
                 startActivity(signupToLogin);
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        locationListener=null;
     }
 
     protected void onResume()

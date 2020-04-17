@@ -107,7 +107,7 @@ public class SplashActivity extends AppCompatActivity {
                                             {
                                                 Intent i=new Intent(SplashActivity.this,MainActivity.class);
                                                 i.putExtra("click","no");
-                                                stopLoading=1;
+                                               stopLoading=1;
                                                 startActivity(i);
                                             }
                                             else

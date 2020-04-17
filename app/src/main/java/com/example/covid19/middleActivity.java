@@ -34,30 +34,36 @@ import static com.example.covid19.Signup.REQUEST_IMAGE_CAPTURE;
 import static java.lang.StrictMath.abs;
 import java.util.HashMap;
 import java.util.Map;
-
+import android.media.MediaPlayer;
 public class middleActivity extends AppCompatActivity {
 
     String username;
     double latitude = 0, longitude = 0, NewLongitude = 0, NewLatitude = 0;
     String quarantineAns = null;
     LocationManager locationManager;
-    Button sendButton, clickImage;
+    Button sendButton;
+    ImageView clickImage;
     TextView msg;
+    private MediaPlayer mediaPlayer;
     int sameFace = 0, samePlace = 0, checkedFace = 0,checkedLocation=0;
-    ;
+
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
 
             Log.d("1", "location change in middle Activity");
-            NewLatitude = Double.valueOf(location.getLongitude());
+
+            NewLongitude = Double.valueOf(location.getLongitude());
             NewLatitude = Double.valueOf(location.getLatitude());
             msg.setText("Got your Location");
-            checkedLocation=1;
-            if (abs(NewLatitude - latitude) <= 0.0005 && abs(NewLongitude - longitude) <= 0.0005) {
-                samePlace = 1;
-            } else {
-                samePlace = 0;
+            checkedLocation = 1;
+            if (NewLongitude != 0 && NewLatitude != 0) {
+                if (abs(NewLatitude - latitude) <= 0.005 && abs(NewLongitude - longitude) <= 0.005) {
+                    samePlace = 1;
+                } else {
+                    samePlace = 0;
+                }
+                Log.d("2", "lat= " + NewLatitude + ", long= " + NewLongitude);
             }
         }
 
@@ -79,7 +85,7 @@ public class middleActivity extends AppCompatActivity {
     };
     void checkStatus() {
 
-        Log.d("1", "in middle Activity checkStatus" + NewLatitude + " new lat " + NewLongitude + " new long ans=" + quarantineAns);
+        Log.d("1", "samePlace="+samePlace);
         if (samePlace == 1 && sameFace == 1)
             quarantineAns = "yes";
         else
@@ -131,18 +137,19 @@ public class middleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_middle);
 
         msg = findViewById(R.id.textView6);
+        msg.setText("Wait, while we are accessing your location !");
         clickImage = findViewById(R.id.button4);
         sendButton = findViewById(R.id.button6);
 
-        msg.setText("Wait, while we are accessing your location !");
+
         Log.d("1", "middleActivity created");
 
+        mediaPlayer = MediaPlayer.create(this, R.raw.alarm);
+        mediaPlayer.start();
+
         username = getIntent().getStringExtra("username");
-
         latitude = Double.valueOf(getIntent().getStringExtra("latitude"));
-
         longitude = Double.valueOf(getIntent().getStringExtra("longitude"));
-
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -178,6 +185,24 @@ public class middleActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        locationListener=null;
+    }
+
+    protected void onResume()
+    {
+        super.onResume();
+        Log.d("1","Resume");
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+        }
+        catch(SecurityException e)
+        {
+
+        }
+    }
     protected void onActivityResult(int requestCode, final int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -190,7 +215,6 @@ public class middleActivity extends AppCompatActivity {
             File file = new File(directory, "Image" + ".jpg");
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath()); // previous image stored
 
-
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             imageBitmap.compress(Bitmap.CompressFormat.JPEG, 10, stream);
             byte[] byteArray1 = stream.toByteArray();
@@ -202,6 +226,7 @@ public class middleActivity extends AppCompatActivity {
                final String encoded1 = Base64.encodeToString(byteArray1, Base64.DEFAULT);
                final String encoded2 = Base64.encodeToString(byteArray2, Base64.DEFAULT);
 
+               Log.d("4","before face++ Api");
             String REGISTER_URL = "https://api-us.faceplusplus.com/facepp/v3/compare";
             RequestQueue queue = Volley.newRequestQueue(middleActivity.this);
                     StringRequest stringRequest = new StringRequest(Request.Method.POST, REGISTER_URL,
@@ -227,6 +252,7 @@ public class middleActivity extends AppCompatActivity {
                                         sameFace = 0;
                                         checkedFace = 1;
                                     }
+                                    Log.d("4","sameFace="+sameFace);
                                 }
                                 catch (JSONException e) {
                                     sameFace = 0;
