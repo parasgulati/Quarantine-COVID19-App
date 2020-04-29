@@ -114,6 +114,7 @@ public class Signup extends AppCompatActivity {
         clickImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clickImage.setEnabled(false);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -124,6 +125,7 @@ public class Signup extends AppCompatActivity {
     fetchDetails.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            fetchDetails.setEnabled(false);
             RequestQueue rq=Volley.newRequestQueue(Signup.this);
             String url2 = "https://apis.mapmyindia.com/advancedmaps/v1/godle5rpj4rpt7ikq4jtaha378bvlw4d/rev_geocode?lat="+latitude+"&lng="+longitude;
             JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.GET, url2, null,
@@ -138,7 +140,9 @@ public class Signup extends AppCompatActivity {
                                     locality=ji.get("locality").toString();
                                     district=ji.get("district").toString();
                                     gotDetails=1;
+                                 fetchDetails.setEnabled(false);
                              } catch (Exception e) {
+                                 fetchDetails.setEnabled(true);
                                 Log.d("2","error "+e.getMessage());
                             }
                         }
@@ -160,7 +164,7 @@ public class Signup extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d("1", "create button pressed");
 
-
+                create.setEnabled(false);
                 if (gotImage == 1 && gotLocation == 1 && gotIMEI==1 && gotDetails==1)
                 {
                     if (username.getText().toString().length() != 0 && password.getText().toString().length() != 0)
@@ -208,10 +212,12 @@ public class Signup extends AppCompatActivity {
 
                                             if( response.get("message").toString().equals("created"))
                                             {
+                                                create.setEnabled(true);
                                                 Toast.makeText(Signup.this,"Your account is successfully created",Toast.LENGTH_LONG).show();
                                             }
                                             else
                                             {
+                                                create.setEnabled(true);
                                                 Toast.makeText(Signup.this,"Sorry, This username is already in use",Toast.LENGTH_LONG).show();
                                             }
 
@@ -224,23 +230,31 @@ public class Signup extends AppCompatActivity {
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
+                                create.setEnabled(true);
                                 Toast.makeText(Signup.this,"error occured during response",Toast.LENGTH_LONG).show();                    }
                         });
                             Log.d("1","response got for create button");
                             requestQueue.add(jsonObjectRequest);
 
-                } else
+                } else {
+                        create.setEnabled(true);
                         Toast.makeText(Signup.this, "Either your username or password is empty.", Toast.LENGTH_LONG).show();
+                    }
                 } else
                     {
-                    if (gotLocation == 0)
+                    if (gotLocation == 0) {
+                        create.setEnabled(true);
                         Toast.makeText(Signup.this, "Wait while we are accessing your location.", Toast.LENGTH_LONG).show();
-                    else
+                    }else
                         {
-                            if(gotDetails==0)
-                                Toast.makeText(Signup.this,"Wait while we are accessing your details",Toast.LENGTH_LONG).show();
-                          else
+                            if(gotDetails==0) {
+                                create.setEnabled(true);
+                                Toast.makeText(Signup.this, "Wait while we are accessing your details", Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                create.setEnabled(true);
                                 Toast.makeText(Signup.this, "!! You have not clicked your picture.", Toast.LENGTH_LONG).show();
+                            }
                         }
                     }
             }
@@ -281,6 +295,7 @@ public class Signup extends AppCompatActivity {
             Bundle extras = data.getExtras();
             imageBitmap = (Bitmap) extras.get("data");
             gotImage=1;
+
         }
     }
 }

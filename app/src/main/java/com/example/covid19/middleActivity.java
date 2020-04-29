@@ -166,6 +166,7 @@ public class middleActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
+                sendButton.setEnabled(false);
                 if (checkedLocation==1 && checkedFace == 1)
                 {
                     checkStatus();
@@ -174,6 +175,7 @@ public class middleActivity extends AppCompatActivity {
                     rd.setSeed(1);
                     int nextWait=rd.nextInt(4);
                     int minute30=nextWait*1000;// 30*60*1000
+                    sendButton.setEnabled(true);
                     AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     Intent alarmIntent = new Intent(middleActivity.this, RestartCOVIDService.class);
                     alarmIntent.putExtra("username",username);
@@ -182,10 +184,13 @@ public class middleActivity extends AppCompatActivity {
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(middleActivity.this, 0, alarmIntent, 0);
                     manager.setExact(RTC_WAKEUP, System.currentTimeMillis()+minute30, pendingIntent);
                 } else {
-                    if (checkedFace == 0)
+                    if (checkedFace == 0) {
+                        sendButton.setEnabled(true);
                         Toast.makeText(middleActivity.this, "Wait your face is being recognized", Toast.LENGTH_LONG).show();
-                    else
+                    }else {
+                        sendButton.setEnabled(true);
                         Toast.makeText(middleActivity.this, "Wait While your Location is beign Accessed", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
@@ -193,6 +198,7 @@ public class middleActivity extends AppCompatActivity {
         clickImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                clickImage.setEnabled(false);
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);

@@ -40,17 +40,21 @@ public class MainActivity extends AppCompatActivity {
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(whetherSignup.equals("yes"))
+                login.setEnabled(false);
+                if (whetherSignup.equals("yes")) {
+                    login.setEnabled(true);
                     startActivity(mainToSignup);
-                else
-                    Toast.makeText(MainActivity.this,"You cannot create more than one account from a single device",Toast.LENGTH_LONG).show();
+                } else {
+                    login.setEnabled(false);
+                    Toast.makeText(MainActivity.this, "You cannot create more than one account from a single device", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                login.setEnabled(false);
                 if(username.getText().toString().length()!=0 && password.getText().toString().length()!=0)
                 {
                     JSONObject json = new JSONObject();
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                                         if(response.get("message").toString().equals("not"))
                                         {
                                             Toast.makeText(MainActivity.this,"Either Username or Password is wrong",Toast.LENGTH_LONG).show();
-
+                                            login.setEnabled(true);
                                         }
                                         else
                                         {
@@ -87,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                                             callToSuccessAct.putExtra("username",response.get("username").toString());
                                             callToSuccessAct.putExtra("latitude",response.get("lat").toString());
                                             callToSuccessAct.putExtra("longitude",response.get("longitude").toString());
+                                            login.setEnabled(true);
                                             startActivity(callToSuccessAct);
 
                                         }
@@ -94,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     catch(Exception e)
                                     {
+                                        login.setEnabled(true);
                                         Log.d("3","exception caught in login");
                                     }
 
@@ -101,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            login.setEnabled(true);
                             Toast.makeText(MainActivity.this, "error occured in response", Toast.LENGTH_LONG).show();
                         }
                     });
@@ -109,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else
                 {
+                    login.setEnabled(true);
                     Toast.makeText(MainActivity.this,"Either username or password is empty",Toast.LENGTH_LONG).show();
                 }
             }
