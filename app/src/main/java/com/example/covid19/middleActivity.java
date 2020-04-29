@@ -1,6 +1,10 @@
 package com.example.covid19;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -9,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -30,10 +35,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+
+import static android.app.AlarmManager.*;
 import static com.example.covid19.Signup.REQUEST_IMAGE_CAPTURE;
 import static java.lang.StrictMath.abs;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+
 import android.media.MediaPlayer;
 public class middleActivity extends AppCompatActivity {
 
@@ -108,7 +117,7 @@ public class middleActivity extends AppCompatActivity {
                         Toast.makeText(middleActivity.this, "response=" + response.toString(), Toast.LENGTH_LONG).show();
                         try {
                             if (response.get("message").toString().equals("added")) {
-                                Toast.makeText(middleActivity.this, "Data Sent Successfully", Toast.LENGTH_LONG).show();
+                                Toast.makeText(middleActivity.this, "Your Updates Sent Successfully", Toast.LENGTH_LONG).show();
                             }
                             else
                                 {
@@ -154,17 +163,24 @@ public class middleActivity extends AppCompatActivity {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
                 if (checkedLocation==1 && checkedFace == 1)
                 {
                     checkStatus();
-                    Intent callCOVIDService = new Intent(middleActivity.this, COVID.class);
-                    callCOVIDService.putExtra("username", username);
-                    callCOVIDService.putExtra("latitude", Double.toString(latitude));
-                    callCOVIDService.putExtra("longitude", Double.toString(longitude));
-                    startService(callCOVIDService);
-                    Toast.makeText(middleActivity.this, "Your updates has been sent", Toast.LENGTH_LONG).show();
+
+                    Random rd=new Random();
+                    rd.setSeed(1);
+                    int nextWait=rd.nextInt(4);
+                    int minute30=nextWait*1000;// 30*60*1000
+                    AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    Intent alarmIntent = new Intent(middleActivity.this, RestartCOVIDService.class);
+                    alarmIntent.putExtra("username",username);
+                    alarmIntent.putExtra("latitude",Double.toString(latitude));
+                    alarmIntent.putExtra("longitude",Double.toString(longitude));
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(middleActivity.this, 0, alarmIntent, 0);
+                    manager.setExact(RTC_WAKEUP, System.currentTimeMillis()+minute30, pendingIntent);
                 } else {
                     if (checkedFace == 0)
                         Toast.makeText(middleActivity.this, "Wait your face is being recognized", Toast.LENGTH_LONG).show();

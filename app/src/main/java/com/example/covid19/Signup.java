@@ -2,13 +2,10 @@ package com.example.covid19;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,11 +17,9 @@ import android.widget.EditText;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -33,6 +28,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,14 +44,16 @@ public class Signup extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     TextView DisplayMsg;
     EditText username,password;
-    Button create,back;
+    Button create,back,fetchDetails;
     ImageView clickImage;
     String IMEI;
     LocationManager locationManager;
     Context c=this;
+    String state=null,city=null,pincode=null,locality=null,district=null;
     String longitude=null,latitude=null;
-    int gotLocation=0,gotImage=0,gotIMEI=0;
+    int gotLocation=1,gotImage=0,gotIMEI=0,gotDetails=0;
     Bitmap imageBitmap;
+    EditText fullname;
     LocationListener locationListener=new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -85,11 +83,12 @@ public class Signup extends AppCompatActivity {
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-
+        fetchDetails=findViewById(R.id.button7);
         username=findViewById(R.id.editText);
         password=findViewById(R.id.editText3);
         create=findViewById(R.id.button3);
@@ -97,6 +96,7 @@ public class Signup extends AppCompatActivity {
         DisplayMsg=findViewById(R.id.textView);
         DisplayMsg.setText("Wait while we are searching your location !");
         clickImage=findViewById(R.id.clickImage);
+        fullname=findViewById(R.id.editText5);
         TelephonyManager tel;
 
         tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -121,11 +121,47 @@ public class Signup extends AppCompatActivity {
             }
         });
 
+    fetchDetails.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            RequestQueue rq=Volley.newRequestQueue(Signup.this);
+            String url2 = "https://apis.mapmyindia.com/advancedmaps/v1/godle5rpj4rpt7ikq4jtaha378bvlw4d/rev_geocode?lat="+latitude+"&lng="+longitude;
+            JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.GET, url2, null,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                             try {
+                                    JSONArray j=response.getJSONArray("results");
+                                    JSONObject ji=j.getJSONObject(0);
+                                    city=ji.get("city").toString();
+                                    pincode=ji.get("pincode").toString();
+                                    locality=ji.get("locality").toString();
+                                    district=ji.get("district").toString();
+                                    gotDetails=1;
+                             } catch (Exception e) {
+                                Log.d("2","error "+e.getMessage());
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    }
+
+
+
+            });
+            rq.add(postRequest);
+        }
+    });
+
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("1", "create button pressed");
-                if (gotImage == 1 && gotLocation == 1 && gotIMEI==1)
+
+
+                if (gotImage == 1 && gotLocation == 1 && gotIMEI==1 && gotDetails==1)
                 {
                     if (username.getText().toString().length() != 0 && password.getText().toString().length() != 0)
                     {
@@ -145,17 +181,23 @@ public class Signup extends AppCompatActivity {
                         }
                         JSONObject json = new JSONObject();
                         try {
+                            json.put("name",fullname.getText().toString());
                             json.put("username",username.getText().toString());
                             json.put("password",password.getText().toString());
                             json.put("lat",latitude);
                             json.put("longitude",longitude);
+                            json.put("state",state);
+                            json.put("city",city);
+                            json.put("pincode",pincode);
+                            json.put("locality",locality);
+                            json.put("district",district);
                             json.put("imeiNumber",IMEI);
                         }
                         catch(JSONException e) {
                             Log.d("5","exception caught");
                         }
 
-                        RequestQueue requestQueue = Volley.newRequestQueue(Signup.this);
+                       RequestQueue requestQueue = Volley.newRequestQueue(Signup.this);
                         String url = "https://quarantinecovid19.herokuapp.com/signup";
                         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, json,
                                 new Response.Listener<JSONObject>() {
@@ -189,12 +231,18 @@ public class Signup extends AppCompatActivity {
 
                 } else
                         Toast.makeText(Signup.this, "Either your username or password is empty.", Toast.LENGTH_LONG).show();
-                } else {
-                    if (gotImage == 1)
+                } else
+                    {
+                    if (gotLocation == 0)
                         Toast.makeText(Signup.this, "Wait while we are accessing your location.", Toast.LENGTH_LONG).show();
                     else
-                        Toast.makeText(Signup.this, "!! You have not clicked your picture.", Toast.LENGTH_LONG).show();
-                }
+                        {
+                            if(gotDetails==0)
+                                Toast.makeText(Signup.this,"Wait while we are accessing your details",Toast.LENGTH_LONG).show();
+                          else
+                                Toast.makeText(Signup.this, "!! You have not clicked your picture.", Toast.LENGTH_LONG).show();
+                        }
+                    }
             }
         });
 
