@@ -2,7 +2,6 @@ package com.example.covid19;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -35,15 +34,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-
 import static android.app.AlarmManager.*;
 import static com.example.covid19.Signup.REQUEST_IMAGE_CAPTURE;
 import static java.lang.StrictMath.abs;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
 import android.media.MediaPlayer;
+
 public class middleActivity extends AppCompatActivity {
 
     String username;
@@ -150,7 +148,6 @@ public class middleActivity extends AppCompatActivity {
         clickImage = findViewById(R.id.button4);
         sendButton = findViewById(R.id.button6);
 
-
         Log.d("1", "middleActivity created");
 
         mediaPlayer = MediaPlayer.create(this, R.raw.alarm);
@@ -197,8 +194,8 @@ public class middleActivity extends AppCompatActivity {
 
         clickImage.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                clickImage.setEnabled(false);
+            public void onClick(View v)
+            {
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
