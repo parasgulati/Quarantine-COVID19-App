@@ -1,6 +1,7 @@
 package com.example.covid19;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -31,13 +33,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ActionBar actionBar = getSupportActionBar(); // or getActionBar();
+        getSupportActionBar().setTitle("Login"); // set the top title
+
+
         tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         username = findViewById(R.id.editText2);
         password = findViewById(R.id.editText4);
         login = findViewById(R.id.button);
         signup = findViewById(R.id.button2);
         final String whetherSignup=getIntent().getStringExtra("click");
-
         final Intent mainToSignup = new Intent(MainActivity.this, Signup.class);
         signup.setOnClickListener(new View.OnClickListener() {
             @Override

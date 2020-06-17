@@ -1,15 +1,20 @@
 package com.example.covid19;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 public class RestartCOVIDService extends BroadcastReceiver {
 String username,latitude,longitude;
+
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent)
+    {
         Log.d("2","Broadcast receiver");
         if (intent.getAction() != null && intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             Intent serviceIntent = new Intent(context, SuccessLogin.class);

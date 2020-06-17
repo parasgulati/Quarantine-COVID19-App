@@ -1,6 +1,7 @@
 package com.example.covid19;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -143,6 +144,9 @@ public class middleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_middle);
 
+       ActionBar actionBar = getSupportActionBar(); // or getActionBar();
+       getSupportActionBar().setTitle("Provide your Update"); // set the top title
+
         msg = findViewById(R.id.textView6);
         msg.setText("Wait, while we are accessing your location !");
         clickImage = findViewById(R.id.button4);
@@ -171,7 +175,7 @@ public class middleActivity extends AppCompatActivity {
                     Random rd=new Random();
                     rd.setSeed(1);
                     int nextWait=rd.nextInt(4);
-                    int minute30=nextWait*1000;// 30*60*1000
+                    int minute30=nextWait*30*60*1000;// 30*60*1000
                     sendButton.setEnabled(true);
                     AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                     Intent alarmIntent = new Intent(middleActivity.this, RestartCOVIDService.class);

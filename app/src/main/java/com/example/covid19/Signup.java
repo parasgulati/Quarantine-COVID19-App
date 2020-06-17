@@ -1,6 +1,7 @@
 package com.example.covid19;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -95,6 +96,10 @@ public class Signup extends AppCompatActivity {
         clickImage=findViewById(R.id.clickImage);
         fullname=findViewById(R.id.editText5);
         TelephonyManager tel;
+
+        ActionBar actionBar = getSupportActionBar(); // or getActionBar();
+        getSupportActionBar().setTitle("Signup"); // set the top title
+
         tel = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         try {
 
