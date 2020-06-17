@@ -4,10 +4,10 @@
 3. After this he should be loggedin.   
 4. After successfull login this app will keep monitoring your image and location (will use image and location matching) after random period of time like 1 hr, 2hrs, or 1/2 hr. And these updates will be shared with the official persons for the monitoring of Quarantine state of the patient.   
 ## Security Feature<br>
-**Only one Account can be created from a single device. And person is allowed to login only once
-The Account created from a particular android device is only allowed to login from that device only.**<br>
+**Only one account can be created from a single device. And a person is allowed to login only once. <br>
+The account created from a particular android device is only allowed to login from that device only.**<br>
 ## Basic Requirements
-The Android device should be GPS enabled and should have a camera<br>
+The Android phone should be GPS enabled and should have a camera<br>
 ## Screen Shots for each Interface of Quarantine Enforcement Android App
 ![1](https://github.com/parasgulati/Quarantine-COVID19-App/blob/master/1.jpg)<br>
 ![2](https://github.com/parasgulati/Quarantine-COVID19-App/blob/master/2.jpg)<br>
